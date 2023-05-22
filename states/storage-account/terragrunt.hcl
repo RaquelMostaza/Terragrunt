@@ -1,5 +1,5 @@
 terraform {
-  source = "../../modules/storageaccount"
+  source = "..//..//modules//storageaccount"
 }
 
 include "root" {
