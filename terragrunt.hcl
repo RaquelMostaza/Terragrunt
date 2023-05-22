@@ -14,7 +14,6 @@ remote_state {
     storage_account_name = "terraformsa128"
     container_name       = "tfstate"
     key                  = "${path_relative_to_include()}/terraform.tfstate"
-    use_microsoft_graph  = true
   }
 }
 
