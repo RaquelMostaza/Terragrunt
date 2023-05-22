@@ -5,5 +5,4 @@ resource "azurerm_storage_account" "sacdh" {
   location                 = var.location
   account_tier             = "Standard"
   account_replication_type = "GRS"
-
 }
