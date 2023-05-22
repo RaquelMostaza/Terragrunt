@@ -10,9 +10,9 @@ remote_state {
     #tenant_id           - set via ARM_ env variables
     #subscription_id     - set via ARM_ env variables
     #snapshot            - set via ARM_ env variables
-    resource_group_name  = "sdadcdd"
-    storage_account_name = "terraformsa128"
-    container_name       = "tfstate"
+    resource_group_name  = "cdhterraform"
+    storage_account_name = "BMW-Terrsfotm-State"
+    container_name       = "cdhstatetg"
     key                  = "${path_relative_to_include()}/terraform.tfstate"
   }
 }
