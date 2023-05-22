@@ -14,24 +14,26 @@ permissions:
       contents: read
 
 env:
-    tf_version: 'latest'
-    tg_version: 'latest'
-    tf_working_dir: 'states/storage-account'
-    ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-    ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-    ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-    ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  TF_BACKEND_CONFIG: >-
+    -backend-config="subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}"
+    -backend-config="resource_group_name=BMW-Terrsfotm-State"
+    -backend-config="storage_account_name=cdhterraform"
+    -backend-config="container_name=cdhtfstate"
+    -backend-config="key=terraform.tfstate"
 
 jobs:
   Terragrunt:
     name: 'Terragrunt'
     runs-on: ubuntu-latest
-
-    # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
-    defaults:
-      run:
-        shell: bash
-
+    env:
+        tf_version: 'latest'
+        tg_version: 'latest'
+        tf_working_dir: 'states/storage-account'
+        ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+        ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+        ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+        ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        
     steps:
     # Checkout the repository to the GitHub Actions runner
     - name: 'Checkout'
