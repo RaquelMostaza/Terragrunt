@@ -16,7 +16,7 @@ permissions:
 env:
     tf_version: 'latest'
     tg_version: 'latest'
-    tf_working_dir: './states/storage-account'
+    tf_working_dir: 'states/storage-account'
     ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
     ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
     ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
