@@ -6,10 +6,6 @@ remote_state {
     if_exists = "overwrite" # Always overrides the file if one exists
   }
   config = {
-    #https://www.terraform.io/language/settings/backends/azurerm
-    #tenant_id           - set via ARM_ env variables
-    #subscription_id     - set via ARM_ env variables
-    #snapshot            - set via ARM_ env variables
     resource_group_name  = "BMW-Terrsfotm-State"
     storage_account_name = "cdhterraform"
     container_name       = "cdhstatetg"

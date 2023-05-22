@@ -1,15 +1,15 @@
-#START - common variables
+variable "prefix" {
+  type        = string
+  default     = "git"
+  description = "prefiy for env"
+}
 variable "location" {
   type        = string
+  default     = "WestEurope"
+  description = "Region to deploy to"
 }
-variable "env" {
-  type        = string
-}
-variable "global_tags" {
-  type = map(any)
-}
-#END - common variables
 
-variable "resourcegroups" {
-  type = list(any)
+variable "rgname" {
+  type        = string
+  description = "Nameof the RG"
 }
