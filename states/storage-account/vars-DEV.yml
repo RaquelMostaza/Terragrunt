@@ -1,0 +1,10 @@
+variables:
+  TF_VAR_environment: dev
+  TF_VAR_location: WestEurope
+  TF_VAR_sku_kv_name: premium
+  TF_VAR_sku_acr_name: Premium
+  TF_VAR_backend_container_name: tfstate
+  TF_VAR_vnetname: VNET-SPOKE-AMS-0589
+  TF_VAR_rgvnetname: RG-VNET-SPOKE-AMS-0589
+  VersionTerraform: 0.14.8
+  VersionTerragrunt: 0.28.3

@@ -10,16 +10,16 @@ remote_state {
     #tenant_id           - set via ARM_ env variables
     #subscription_id     - set via ARM_ env variables
     #snapshot            - set via ARM_ env variables
-    resource_group_name  = "${get_env("TF_VAR_environment")}-coin-tf-rg"
-    storage_account_name = "${get_env("TF_VAR_environment")}cointerraformsa"
-    container_name       = "${get_env("TF_VAR_backend_container_name")}"
+    resource_group_name  = "sdadcdd"
+    storage_account_name = "terraformsa128"
+    container_name       = "tfstate"
     key                  = "${path_relative_to_include()}/terraform.tfstate"
     use_microsoft_graph  = true
   }
 }
 
 inputs = {
-  global_tags = merge({Terraform = "true"}, {env = "${get_env("TF_VAR_environment")}"}, {location = "${get_env("TF_VAR_location")}"})
+  global_tags = merge({Terraform = "true"}, {env = "dev"}, {location = "WestEurope"})
 }
 
 locals {

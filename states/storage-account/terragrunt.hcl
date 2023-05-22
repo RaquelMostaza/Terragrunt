@@ -7,9 +7,9 @@ include "root" {
 }
 
 inputs = {
-  env            = "${get_env("TF_VAR_env")}"
-  location       = "${get_env("TF_VAR_location")}"
-  resourcegroups = yamldecode(file("env-${get_env("TF_VAR_env")}.yml"))
+  env            = "dev"
+  location       = "WestEurope"
+  resourcegroups = yamldecode(file("env-dev.yml"))
 }
 
 locals {
