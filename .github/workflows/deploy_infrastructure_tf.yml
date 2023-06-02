@@ -1,0 +1,146 @@
+name: deploy-infrastructure-tf
+on:
+  workflow_call:
+    inputs:
+      tf-action:
+        description: 'Select either to "create" or "destroy" the infrastructure'
+        type: string
+      namespace:
+          description: 'namespace'
+          type: string
+      postfix:
+          description: 'postfix'
+          type: string
+      vnet_resource_group:
+          description: 'Azure vnet resource group name'
+          type: string
+      environment:
+          description: 'environment'
+          type: string
+      vnet_name:
+          description: 'Azure vnet name'
+          type: string
+      snet_name:
+          description: 'Azure subnet name'
+          type: string
+      location:
+          description: 'Azure location name'
+          type: string
+      route_table_name:
+          description: 'Vnet route table name'
+          type: string
+      prefix:
+          description: 'Prefix'
+          type: string
+      enable_aml_computecluster:
+          description: 'enable_aml_computecluster'
+          type: string
+      enable_aml_secure_workspace:
+          description: 'enable_aml_secure_workspace'
+          type: string
+      enable_monitoring:
+          description: 'enable_monitoring'
+          type: string  
+      branch_name:
+          description: 'target repo branch name'
+          type: string
+      dns_zone_api_name:
+          description: 'AML API dns name'
+          type: string
+      dns_zone_api_rg:
+          description: 'AML API dns resource group'
+          type: string
+      dns_zone_nb_name:
+          description: 'AML Notebook dns name'
+          type: string
+      dns_zone_nb_rg:
+          description: 'AML notebook dns resource group'
+          type: string
+    
+    secrets:
+      client_id:
+        required: true
+      client_secret:
+        required: true
+      subscription_id:
+        required: true
+      tenant_id:
+        required: true
+      repoAccessToken:
+        required: true
+env:
+  TERRAGRUNT_VERSION: 0.45.0
+
+jobs:
+   terraform-create:
+    env:
+      ARM_CLIENT_ID: ${{ secrets.client_id }}
+      ARM_CLIENT_SECRET: ${{ secrets.client_secret }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.subscription_id }}
+      ARM_TENANT_ID: ${{ secrets.tenant_id }}
+      TF-ACTION: ${{ github.event.inputs.tf-action }}
+    runs-on: atc-ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: 'Checkout infra template repo'
+      uses: actions/checkout@v2
+      with:
+        repository: xxx/aip-azure-mlops-infrastructure
+        ref: ${{ inputs.branch_name }}
+        path: infra
+        token: ${{ secrets.repoAccessToken }}
+
+    - name: 'Setup Node'
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'
+
+    - name: 'Terraform Install'
+      uses: hashicorp/setup-terraform@v2
+
+    - name: Setup Terragrunt
+      uses: autero1/action-terragrunt@v1.1.0
+      with:
+        terragrunt_version: ${{ env.TERRAGRUNT_VERSION }}
+
+    - name: Interact with Terragrunt
+      run: terragrunt --version
+
+    - name: 'Az CLI login'
+      uses: azure/actions/login@v1
+      with:
+         creds: '{"clientId":"${{ secrets.clientId }}","clientSecret":"${{ secrets.clientSecret }}","subscriptionId":"${{ secrets.subscriptionId }}","tenantId":"${{ secrets.tenantId }}"}'
+    - name: 'Az CLI login'
+      uses: azure/actions/login@v1
+      with:
+         creds: '{"clientId":"${{ secrets.client_id }}","clientSecret":"${{ secrets.client_secret }}","subscriptionId":"${{ secrets.subscription_id }}","tenantId":"${{ secrets.tenant_id }}"}'
+
+    - name: 'Init'
+      run: |
+        cd infra/infrastructure
+        terraform init -backend-config="container_name=${{ inputs.storage_container }}" -backend-config="key=${{ inputs.terraform_st_key }}" -backend-config="storage_account_name=${{ inputs.storage_account }}" -backend-config="resource_group_name=${{ inputs.resource_group }}"
+
+    - name: 'Plan'
+      if: ${{ inputs.tf-action == 'create' }}
+      run: |
+        echo "Plan the infrastructure"
+        cd infra/infrastructure
+        echo "Value of dns api name ${{ inputs.dns_zone_api_name }}"
+        terragrunt run-all plan -var "client_secret=${{ env.ARM_CLIENT_SECRET }}" -var "namespace=${{ inputs.namespace }}" -var "postfix=${{ inputs.postfix }}" -var "vnet_rg=${{ inputs.vnet_resource_group }}" -var "vnet_resource_group=${{ inputs.vnet_resource_group }}" -var "vnet_name=${{ inputs.vnet_name }}" -var "prefix=${{ inputs.prefix }}" -var "environment=${{ inputs.environment }}" -var "enable_aml_computecluster=${{ inputs.enable_aml_computecluster }}" -var "enable_aml_secure_workspace=${{ inputs.enable_aml_secure_workspace }}" -var "enable_monitoring=${{ inputs.enable_monitoring }}" -var "dns_zone_api_name=${{ inputs.dns_zone_api_name }}" -var "dns_zone_api_rg=${{ inputs.dns_zone_api_rg }}" -var "dns_zone_nb_name=${{ inputs.dns_zone_nb_name }}" -var "dns_zone_nb_rg=${{ inputs.dns_zone_nb_rg }}" -var "route_table_name=${{ inputs.route_table_name }}" -input=false
+
+    - name: 'Apply'
+      if: ${{ inputs.tf-action == 'create' }}
+      run: |
+        echo "Apply the infrastructure"
+        cd infra/infrastructure
+        terragrunt run-all apply --terragrunt-non-interactive -var "client_secret=${{ env.ARM_CLIENT_SECRET }}" -var "namespace=${{ inputs.namespace }}" -var "postfix=${{ inputs.postfix }}" -var "vnet_rg=${{ inputs.vnet_resource_group }}" -var "vnet_resource_group=${{ inputs.vnet_resource_group }}" -var "vnet_name=${{ inputs.vnet_name }}" -var "prefix=${{ inputs.prefix }}" -var "environment=${{ inputs.environment }}" -var "enable_aml_computecluster=${{ inputs.enable_aml_computecluster }}" -var "enable_aml_secure_workspace=${{ inputs.enable_aml_secure_workspace }}" -var "enable_monitoring=${{ inputs.enable_monitoring }}" -var "dns_zone_api_name=${{ inputs.dns_zone_api_name }}" -var "dns_zone_api_rg=${{ inputs.dns_zone_api_rg }}" -var "dns_zone_nb_name=${{ inputs.dns_zone_nb_name }}" -var "dns_zone_nb_rg=${{ inputs.dns_zone_nb_rg }}" -var "route_table_name=${{ inputs.route_table_name }}" -input=false
+
+    - name: 'Destroy'
+      if: ${{ inputs.tf-action == 'Destroy' }}
+      run: |
+        echo "Destroy the infrastructure"
+        cd infra/infrastructure
+        echo "Value of dns api name ${{ inputs.dns_zone_api_name }}"
+        terragrunt run-all destroy --terragrunt-non-interactive -var "client_secret=${{ env.ARM_CLIENT_SECRET }}" -var "namespace=${{ inputs.namespace }}" -var "postfix=${{ inputs.postfix }}" -var "vnet_rg=${{ inputs.vnet_resource_group }}" -var "vnet_resource_group=${{ inputs.vnet_resource_group }}" -var "vnet_name=${{ inputs.vnet_name }}" -var "prefix=${{ inputs.prefix }}" -var "environment=${{ inputs.environment }}" -var "enable_aml_computecluster=${{ inputs.enable_aml_computecluster }}" -var "enable_aml_secure_workspace=${{ inputs.enable_aml_secure_workspace }}" -var "enable_monitoring=${{ inputs.enable_monitoring }}" -var "dns_zone_api_name=${{ inputs.dns_zone_api_name }}" -var "dns_zone_api_rg=${{ inputs.dns_zone_api_rg }}" -var "dns_zone_nb_name=${{ inputs.dns_zone_nb_name }}" -var "dns_zone_nb_rg=${{ inputs.dns_zone_nb_rg }}" -var "route_table_name=${{ inputs.route_table_name }}" -input=false
