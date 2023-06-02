@@ -1,1 +1,0 @@
-rgname  =  "rg_acc"
