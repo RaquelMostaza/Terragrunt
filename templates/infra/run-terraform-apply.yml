@@ -2,12 +2,12 @@
 # Licensed under the MIT License.
 
 parameters:
-- name: jumphost_username
-  type: string
-  default: "azureuser"
-- name: jumphost_password
-  type: string
-  default: "ThisIsNotVerySecure!"
+# - name: jumphost_username
+#   type: string
+#   default: "azureuser"
+# - name: jumphost_password
+#   type: string
+#   default: "ThisIsNotVerySecure!"
 
 steps:
   - task: TerraformTaskV2@2
