@@ -14,29 +14,18 @@ on:
   #     vnet_resource_group:
   #         description: 'Azure vnet resource group name'
   #         type: string
-    workflow_dispatch:
-      inputs:
-        tf-action:
-          description: 'Select either to "create" or "destroy" the infrastructure'
+  workflow_dispatch:
+    inputs:
+      tf-action:
+        description: 'Select either to "create" or "destroy" the infrastructure'
+        type: string
+      namespace:
+          description: 'namespace'
           type: string
-        namespace:
-            description: 'namespace'
-            type: string
-        vnet_resource_group:
-            description: 'Azure vnet resource group name'
-            type: string
+      vnet_resource_group:
+          description: 'Azure vnet resource group name'
+          type: string
 
-    secrets:
-      client_id:
-        required: true
-      client_secret:
-        required: true
-      subscription_id:
-        required: true
-      tenant_id:
-        required: true
-      repoAccessToken:
-        required: true
 env:
   TERRAGRUNT_VERSION: 0.45.0
 
