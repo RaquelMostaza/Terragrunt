@@ -1,16 +1,30 @@
 name: deploy-infrastructure-tf
 on:
-  workflow_call:
-    inputs:
-      tf-action:
-        description: 'Select either to "create" or "destroy" the infrastructure'
-        type: string
-      namespace:
-          description: 'namespace'
+  push:
+    branches:
+      - main
+  # workflow_call:
+  #   inputs:
+  #     tf-action:
+  #       description: 'Select either to "create" or "destroy" the infrastructure'
+  #       type: string
+  #     namespace:
+  #         description: 'namespace'
+  #         type: string
+  #     vnet_resource_group:
+  #         description: 'Azure vnet resource group name'
+  #         type: string
+    workflow_dispatch:
+      inputs:
+        tf-action:
+          description: 'Select either to "create" or "destroy" the infrastructure'
           type: string
-      vnet_resource_group:
-          description: 'Azure vnet resource group name'
-          type: string
+        namespace:
+            description: 'namespace'
+            type: string
+        vnet_resource_group:
+            description: 'Azure vnet resource group name'
+            type: string
 
     secrets:
       client_id:
