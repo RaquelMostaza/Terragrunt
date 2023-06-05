@@ -8,6 +8,8 @@ environment: "dev"
 # enable_monitoring: true
 # module_version: "feature/pre-release"
 
+terraform_version: 0.14.7
+terraform_workingdir: infrastructure/terraform
 resource_group: "rg-daimler"
 storage_account: "testboth123"
 storage_container: "testfile123"

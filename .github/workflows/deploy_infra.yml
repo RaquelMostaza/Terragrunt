@@ -1,0 +1,109 @@
+name: deployinfrastructure
+on:
+  workflow_call:
+    inputs:
+      tf-action:
+        description: 'Select either to "create" or "destroy" the infrastructure'
+        type: string
+      vnet_resource_group:
+          description: 'Azure vnet resource group name'
+          type: string
+      environment:
+          description: 'environment'
+          type: string
+      vnet_name:
+          description: 'Azure vnet name'
+          type: string
+      snet_name:
+          description: 'Azure subnet name'
+          type: string
+      location:
+          description: 'Azure location name'
+          type: string
+      route_table_name:
+          description: 'Vnet route table name'
+          type: string
+      branch_name:
+          description: 'target repo branch name'
+          type: string
+
+    secrets:
+      AZURE_CLIENT_ID:
+        required: true
+      AZURE_CLIENT_SECRET:
+        required: true
+      AZURE_SUBSCRIPTION_ID:
+        required: true
+      AZURE_TENANT_ID:
+        required: true
+
+env:
+  TERRAGRUNT_VERSION: 0.45.0
+
+jobs:
+   terraform-create:
+    env:
+      ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      TF-ACTION: ${{ github.event.inputs.tf-action }}
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: 'Checkout infra template repo'
+      uses: actions/checkout@v2
+      with:
+        repository: GIT_TERRAGTUNT/Terragrunt
+        ref: main
+        path: infra
+
+    - name: 'Terraform Install'
+      uses: hashicorp/setup-terraform@v2
+
+    - name: Setup Terragrunt
+      uses: autero1/action-terragrunt@v1.1.0
+      with:
+        terragrunt_version: ${{ env.TERRAGRUNT_VERSION }}
+
+    - name: Interact with Terragrunt
+      run: terragrunt --version
+
+    - name: 'Az CLI login'
+      uses: azure/actions/login@v1
+      with:
+         creds: '{"clientId":"${{ secrets.clientId }}","clientSecret":"${{ secrets.clientSecret }}","subscriptionId":"${{ secrets.subscriptionId }}","tenantId":"${{ secrets.tenantId }}"}'
+    - name: 'Az CLI login'
+      uses: azure/actions/login@v1
+      with:
+         creds: '{"clientId":"${{ secrets.client_id }}","clientSecret":"${{ secrets.client_secret }}","subscriptionId":"${{ secrets.subscription_id }}","tenantId":"${{ secrets.tenant_id }}"}'
+
+    - name: 'Init'
+      run: |
+        cd infra/infrastructure
+        terraform init -backend-config="container_name=${{ inputs.storage_container }}" -backend-config="storage_account_name=${{ inputs.storage_account }}" -backend-config="resource_group_name=${{ inputs.resource_group }}"
+
+    - name: 'Plan'
+      if: ${{ inputs.tf-action == 'create' }}
+      run: |
+        echo "Plan the infrastructure"
+        cd infra/infrastructure
+        echo "Value of dns api name "
+        terragrunt run-all plan -var "client_secret=${{ env.ARM_CLIENT_SECRET }}" -var "vnet_rg=${{ inputs.vnet_resource_group }}" -var "vnet_resource_group=${{ inputs.vnet_resource_group }}" -var "vnet_name=${{ inputs.vnet_name }}" -var "environment=${{ inputs.environment }}" -input=false
+
+    - name: 'Apply'
+      if: ${{ inputs.tf-action == 'create' }}
+      run: |
+        echo "Apply the infrastructure"
+        cd infra/infrastructure
+        terragrunt run-all apply --terragrunt-non-interactive -var "client_secret=${{ env.ARM_CLIENT_SECRET }}" -var "vnet_rg=${{ inputs.vnet_resource_group }}" -var "vnet_resource_group=${{ inputs.vnet_resource_group }}" -var "vnet_name=${{ inputs.vnet_name }}" -var "environment=${{ inputs.environment }}" -input=false
+
+    - name: 'Destroy'
+      if: ${{ inputs.tf-action == 'Destroy' }}
+      run: |
+        echo "Destroy the infrastructure"
+        cd infra/infrastructure
+        echo "Value of dns api name ${{ inputs.dns_zone_api_name }}"
+        terragrunt run-all destroy --terragrunt-non-interactive -var "client_secret=${{ env.ARM_CLIENT_SECRET }}" -var "vnet_rg=${{ inputs.vnet_resource_group }}" -var "vnet_resource_group=${{ inputs.vnet_resource_group }}" -var "vnet_name=${{ inputs.vnet_name }}" -var "environment=${{ inputs.environment }}" -input=false
