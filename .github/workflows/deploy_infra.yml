@@ -59,7 +59,7 @@ jobs:
     - name: 'Checkout infra template repo'
       uses: actions/checkout@v2
       with:
-        repository: GIT_TERRAGTUNT/Terragrunt
+        repository: RaquelMostaza/Terragrunt
         ref: main
         path: infra
 
