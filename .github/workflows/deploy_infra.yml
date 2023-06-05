@@ -1,5 +1,8 @@
 name: deployinfrastructure
 on:
+  push:
+    branches:
+      - main
   workflow_call:
     inputs:
       tf-action:
