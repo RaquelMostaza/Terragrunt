@@ -30,15 +30,6 @@ on:
           description: 'target repo branch name'
           type: string
 
-    secrets:
-      AZURE_CLIENT_ID:
-        required: true
-      AZURE_CLIENT_SECRET:
-        required: true
-      AZURE_SUBSCRIPTION_ID:
-        required: true
-      AZURE_TENANT_ID:
-        required: true
 
 env:
   TERRAGRUNT_VERSION: 0.45.0
