@@ -1,3 +1,7 @@
+terraform {
+  source = "../../infrastructure/modules/storageaccount"
+}
+
 include "root" {
   path = find_in_parent_folders()
 }
@@ -10,6 +14,4 @@ include "env" {
 # terraform {
 #   source = "${include.env.locals.source_base_url}?ref=${include.env.locals.module_version}"
 # }
-terraform {
-  source = "../../infrastructure/modules/storageaccount"
-}
+

@@ -77,7 +77,7 @@ jobs:
 
     - name: 'Init'
       run: |
-        cd terragrunt/dev
+        cd terragrunt/dev/storage-account
         terraform init -backend-config="container_name=testfile123" -backend-config="terraform.tfstate" -backend-config="storage_account_name=testboth123" -backend-config="resource_group_name=rg-daimler"
 
     - name: 'Plan'
@@ -92,7 +92,7 @@ jobs:
       if: ${{ inputs.tf-action == 'create' }}
       run: |
         echo "Apply the infrastructure"
-        cd infra/infrastructure
+        cd terragrunt/dev/storage-account
         terragrunt run-all apply --terragrunt-non-interactive -var "client_secret=${{ env.ARM_CLIENT_SECRET }}" -var "namespace=${{ inputs.namespace }}" -var "postfix=${{ inputs.postfix }}" -var "vnet_rg=${{ inputs.vnet_resource_group }}" -var "vnet_resource_group=${{ inputs.vnet_resource_group }}" -var "vnet_name=${{ inputs.vnet_name }}" -var "prefix=${{ inputs.prefix }}" -var "environment=${{ inputs.environment }}" -var "dns_zone_api_name=${{ inputs.dns_zone_api_name }}" -var "dns_zone_api_rg=${{ inputs.dns_zone_api_rg }}" -var "dns_zone_nb_name=${{ inputs.dns_zone_nb_name }}" -var "dns_zone_nb_rg=${{ inputs.dns_zone_nb_rg }}" -var "route_table_name=${{ inputs.route_table_name }}" -input=false
 
     - name: 'Destroy'
