@@ -7,16 +7,16 @@ locals {
   source_base_url = "${local.global_vars.locals.source_base_url}storage-account"
 }
 
-dependencies {
-  paths = ["${get_terragrunt_dir()}//../networking","${get_terragrunt_dir()}//../container-registry"]
-}
+# dependencies {
+#   paths = ["${get_terragrunt_dir()}//../networking","${get_terragrunt_dir()}//../container-registry"]
+# }
 
-dependency "containerregistry" {
-  config_path = "${get_terragrunt_dir()}//../container-registry"
-  mock_outputs = {
-    id = "/subscriptions/e685500d-fd78-44fb-838b-XXXXXX/resourceGroups/XXXXXXX/providers/Microsoft.ContainerRegistry/registries/name"
-  }
-}
+# dependency "containerregistry" {
+#   config_path = "${get_terragrunt_dir()}//../container-registry"
+#   mock_outputs = {
+#     id = "/subscriptions/e685500d-fd78-44fb-838b-XXXXXX/resourceGroups/XXXXXXX/providers/Microsoft.ContainerRegistry/registries/name"
+#   }
+# }
 
 inputs = {
   st_name     = local.env_vars.locals.storage_account

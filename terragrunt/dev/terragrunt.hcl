@@ -19,10 +19,10 @@ locals {
   # enable_aml_computecluster = yamldecode(file("../../${local.env_type}")).enable_aml_computecluster
   # enable_aml_secure_workspace = yamldecode(file("../../${local.env_type}")).enable_aml_secure_workspace
   # enable_monitoring = yamldecode(file("../../${local.env_type}")).enable_monitoring
-  prefix = yamldecode(file("../../${local.env_type}")).namespace
-  postfix = yamldecode(file("../../${local.env_type}")).postfix
+  # prefix = yamldecode(file("../../${local.env_type}")).namespace
+  # postfix = yamldecode(file("../../${local.env_type}")).postfix
   env = yamldecode(file("../../${local.env_type}")).environment
-  clusters = yamldecode(file("../../${local.env_type}")).clusters
+  # clusters = yamldecode(file("../../${local.env_type}")).clusters
 
   # # DNS Zone API
   # dns_zone_api_name = yamldecode(file("../../${local.env_type}")).dns_zone_api_name
