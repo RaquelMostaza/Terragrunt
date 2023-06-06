@@ -7,6 +7,9 @@ include "env" {
   expose = true
 }
 
+# terraform {
+#   source = "${include.env.locals.source_base_url}?ref=${include.env.locals.module_version}"
+# }
 terraform {
-  source = "${include.env.locals.source_base_url}?ref=${include.env.locals.module_version}"
+  source = "../../infrastructure/modules/storageaccount"
 }
