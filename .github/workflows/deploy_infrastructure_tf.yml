@@ -84,8 +84,8 @@ jobs:
       if: ${{ inputs.tf-action == 'create' }}
       run: |
         echo "Plan the infrastructure"
-        cd infra/infrastructure
-        echo "Value of dns api name ${{ inputs.dns_zone_api_name }}"
+        cd terragrunt/dev/storage-account
+        echo "Value of dns api name"
         terragrunt run-all plan -var "client_secret=${{ env.ARM_CLIENT_SECRET }}" -var "namespace=${{ inputs.namespace }}" -var "postfix=${{ inputs.postfix }}" -var "vnet_rg=${{ inputs.vnet_resource_group }}" -var "vnet_resource_group=${{ inputs.vnet_resource_group }}" -var "vnet_name=${{ inputs.vnet_name }}" -var "prefix=${{ inputs.prefix }}" -var "environment=${{ inputs.environment }}" -var "dns_zone_api_name=${{ inputs.dns_zone_api_name }}" -var "dns_zone_api_rg=${{ inputs.dns_zone_api_rg }}" -var "dns_zone_nb_name=${{ inputs.dns_zone_nb_name }}" -var "dns_zone_nb_rg=${{ inputs.dns_zone_nb_rg }}" -var "route_table_name=${{ inputs.route_table_name }}" -input=false
 
     - name: 'Apply'
