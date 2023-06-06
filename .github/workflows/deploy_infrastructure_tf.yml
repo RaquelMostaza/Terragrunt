@@ -78,7 +78,7 @@ jobs:
     - name: 'Init'
       run: |
         cd terragrunt/dev/storage-account
-        terraform init -backend-config="container_name=testfile123" -backend-config=terraform.tfstate" -backend-config="storage_account_name=testboth123" -backend-config="resource_group_name=rg-daimler"
+        terraform init -backend-config="container_name=testfile123" -backend-config="terraform.tfstate" -backend-config="storage_account_name=testboth123" -backend-config="resource_group_name=rg-daimler"
 
     - name: 'Plan'
       if: ${{ inputs.tf-action == 'create' }}
