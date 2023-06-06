@@ -77,7 +77,7 @@ jobs:
 
     - name: 'Init'
       run: |
-        ../../terragrunt/dev/storage-account
+        cd terragrunt/dev
         terraform init -backend-config="container_name=testfile123" -backend-config="terraform.tfstate" -backend-config="storage_account_name=testboth123" -backend-config="resource_group_name=rg-daimler"
 
     - name: 'Plan'
