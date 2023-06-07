@@ -1,0 +1,66 @@
+name: example
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+   terraform-create:
+    env:
+      ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      TF-ACTION: ${{ github.event.inputs.tf-action }}
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: 'Checkout infra template repo'
+      uses: actions/checkout@v2
+      # with:
+      #   repository: xxx/aip-azure-mlops-infrastructure
+      #   ref: ${{ inputs.branch_name }}
+      #   path: infra
+      #   token: ${{ secrets.repoAccessToken }}
+
+    # - name: 'Setup Node'
+    #   uses: actions/setup-node@v2
+    #   with:
+    #     node-version: '14'
+
+    - name: 'Terraform Install'
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_wrapper: false
+
+    - name: Setup Terragrunt
+      uses: autero1/action-terragrunt@v1.1.0
+      with:
+        terragrunt_version: ${{ env.TERRAGRUNT_VERSION }}
+
+    - name: Interact with Terragrunt
+      run: terragrunt --version
+
+    - name: 'Az CLI login'
+      uses: azure/actions/login@v1
+      with:
+         creds: '{"clientId":"${{ secrets.AZURE_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_CLIENT_SECRET }}","subscriptionId":"${{ secrets.AZURE_SUBSCRIPTION_ID }}","tenantId":"${{ secrets.AZURE_TENANT_ID }}"}'
+
+    - name: 'Init'
+      run: |
+        cd terragrunt_copy/dev/storage-account
+        terraform init 
+        env:
+          - backend-config="container_name=testfile123" 
+          - backend-config="terraform.tfstate" 
+          - backend-config="storage_account_name=testboth123" 
+          - backend-config="resource_group_name=rg-daimler"
+
+    # - name: 'Plan'
+    #   run: |
+    #     echo "Plan the infrastructure"
+    #     cd terragrunt_copy/dev/storage-account
+    #     echo "Value of dns api name"
+    #     terragrunt run-all plan -var "client_secret=${{ env.ARM_CLIENT_SECRET }}" -var "namespace=${{ inputs.namespace }}" -var "postfix=${{ inputs.postfix }}" -var "vnet_rg=${{ inputs.vnet_resource_group }}" -var "vnet_resource_group=${{ inputs.vnet_resource_group }}" -var "vnet_name=${{ inputs.vnet_name }}" -var "prefix=${{ inputs.prefix }}" -var "environment=${{ inputs.environment }}" -var "dns_zone_api_name=${{ inputs.dns_zone_api_name }}" -var "dns_zone_api_rg=${{ inputs.dns_zone_api_rg }}" -var "dns_zone_nb_name=${{ inputs.dns_zone_nb_name }}" -var "dns_zone_nb_rg=${{ inputs.dns_zone_nb_rg }}" -var "route_table_name=${{ inputs.route_table_name }}" -input=false

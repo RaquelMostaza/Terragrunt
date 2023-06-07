@@ -1,0 +1,50 @@
+parameters:
+- name: infraType
+  type: string
+- name: dependsOn
+  type: object
+  default: []
+- name: environment
+  type: string
+
+steps:
+  - task: AzureCLI@2
+    displayName: terragrunt plan
+    inputs:
+      azureSubscription: "COIN-${{ parameters.environment }}" # <-- dynamically modified during template parsing
+      scriptType: bash
+      scriptLocation: inlineScript
+      addSpnToEnvironment: true
+      inlineScript: |
+
+        export ARM_CLIENT_ID=$servicePrincipalId
+        export ARM_CLIENT_SECRET=$servicePrincipalKey
+        export ARM_SUBSCRIPTION_ID=$(az account show --query 'id' --output tsv)
+        export ARM_TENANT_ID=$(az account show --query 'tenantId' --output tsv)
+        export ARM_SNAPSHOT=true
+
+        echo $ARM_CLIENT_ID
+        echo $ARM_CLIENT_SECRET
+        echo $ARM_SUBSCRIPTION_ID
+        echo $ARM_TENANT_ID
+        echo $ARM_SNAPSHOT
+
+        items=$(printenv | grep 'TF_VAR')
+          for item in $items
+            do
+              FirstPart=$(echo $item | awk '{sub(/=/," ")}1' | awk '{print $1}' | tr 'A-Z' 'a-z' | sed -e 's/tf_var/TF_VAR/')
+              SecondPart=$(echo $item | awk '{sub(/=/," ")}1' | awk '{print $2}')
+              item="${FirstPart}=${SecondPart}"
+              echo "export $item"
+              export $item
+            done
+        export TF_VAR_SYSTEM_ACCESSTOKEN=$(System.AccessToken)
+        echo "$TF_VAR_environment"
+        echo "$TF_VAR_SYSTEM_ACCESSTOKEN"
+        echo "$(Build.ArtifactStagingDirectory)/terraform-plan-${{ parameters.infraType }}-${{ parameters.environment }}-$(Build.BuildNumber).tfstate"
+        terragrunt plan -lock=false -out $(Build.ArtifactStagingDirectory)/terraform-plan-${{ parameters.infraType }}-${{ parameters.environment }}-$(Build.BuildNumber).tfstate        
+      workingDirectory: src/terraform/states/${{ parameters.infraType }}
+
+  - publish: $(Build.ArtifactStagingDirectory)
+    artifact: terraform-plan-${{ parameters.infraType }}-${{ parameters.environment }}
+    displayName: terraform plan publish terraform-plan-${{ parameters.infraType }}-${{ parameters.environment }}-$(Build.BuildNumber).tfstate    

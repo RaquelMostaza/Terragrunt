@@ -1,8 +1,8 @@
 name: deploy-infrastructure-tf
 on:
-  push:
-    branches:
-      - main
+  # push:
+  #   branches:
+  #     - main
   # workflow_call:
   #   inputs:
   #     tf-action:
