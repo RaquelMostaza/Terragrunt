@@ -84,4 +84,4 @@ jobs:
         echo "Plan the infrastructure"
         cd terragrunt_copy/dev/storage-account
         echo "Value of dns api name"
-        terragrunt run-all plan -var-file="../config-infra-dev.tfvars" 
+        terragrunt run-all plan 
