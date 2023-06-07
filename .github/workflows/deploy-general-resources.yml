@@ -3,6 +3,9 @@ on:
   push:
     branches:
       - main
+      
+env:
+  TERRAGRUNT_VERSION: 0.45.0
 
 jobs:
    terraform-create:
