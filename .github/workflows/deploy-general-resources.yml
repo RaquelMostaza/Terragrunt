@@ -47,7 +47,8 @@ jobs:
 
     - name: 'Output Values'
       run: |
-        echo "ENV_FILE=config-infra-dev.yml" >> GITHUB_ENV
+        echo "ENV_FILE=config-infra-dev.yml" >> $GITHUB_ENV
+
     - uses: cardinalby/export-env-action@v2
       id: read
       with:
