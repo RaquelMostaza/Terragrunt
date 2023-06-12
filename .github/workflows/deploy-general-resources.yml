@@ -39,17 +39,21 @@ jobs:
       ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
       TF-ACTION: ${{ github.event.inputs.tf-action }}
     runs-on: ubuntu-latest
+    outputs:
+        location: ${{steps.read.outputs.location}}
     steps:
     - name: Checkout
       uses: actions/checkout@v2
 
-    - name: 'Checkout infra template repo'
-      uses: actions/checkout@v2
-      # with:
-      #   repository: xxx/aip-azure-mlops-infrastructure
-      #   ref: ${{ inputs.branch_name }}
-      #   path: infra
-      #   token: ${{ secrets.repoAccessToken }}
+    - name: 'Output Values'
+      run: |
+        echo "ENV_FILE=config-infra-dev.yml" >> GITHUB_ENV
+    - uses: cardinalby/export-env-action@v2
+      id: read
+      with:
+        envFile: ${{env.ENV_FILE}}
+        expand: 'true'
+        export: 'false'
 
     # - name: 'Setup Node'
     #   uses: actions/setup-node@v2
