@@ -37,6 +37,7 @@ stages :
       - template: templates/infra/create-resource-group.yml@mlops-templates
       - template: templates/infra/create-storage-account.yml@mlops-templates
       - template: templa>tes/infra/create-storage-container.yml@mlops-templates
+
   - stage: DeployDataFactory
     displayName: Deploy Data Factory
     jobs:
@@ -52,3 +53,14 @@ stages :
       - template: templates/infra/run-terraform-validate.yml@mlops-templates
       - template: templates/infra/run-terraform-plan.yml@mlops-templates
       - template: templates/infra/run-terraform-apply.yml@mlops-templates
+    - job: waitForValidation
+      displayName: Wait for external validation  
+      timeoutInMinutes: 4320 # job times out in 3 days
+      steps:   
+      - task: ManualValidation@0
+        timeoutInMinutes: 1440 # task times out in 1 day
+        inputs:
+          notifyUsers: |
+            raquelmo@microsoft.com
+          instructions: 'Please validate the build configuration and resume'
+          onTimeout: 'resume'
